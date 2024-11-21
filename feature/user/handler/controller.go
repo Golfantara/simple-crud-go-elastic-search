@@ -2,6 +2,7 @@ package handler
 
 import (
 	"elasticsearch/feature/user"
+	"elasticsearch/feature/user/dtos"
 	"encoding/json"
 	"net/http"
 )
@@ -24,22 +25,33 @@ func (ctl *controller) CreateUser(w http.ResponseWriter, r *http.Request) {
         return
     }
 
-    var user user.User
+    var user dtos.InputUser
+
+    // Decode JSON body to struct
     if err := json.NewDecoder(r.Body).Decode(&user); err != nil {
-        http.Error(w, "Invalid request body", http.StatusBadRequest)
+        http.Error(w, "Invalid request payload", http.StatusBadRequest)
         return
     }
 
-    if err := ctl.service.CreateUser(user); err != nil {
+    // Validate input (example: check if Name is empty)
+    if user.Name == "" {
+        http.Error(w, "Name is required", http.StatusBadRequest)
+        return
+    }
+
+    // Call the service to create the user
+    result, err := ctl.service.CreateUser(user)
+    if err != nil {
         http.Error(w, err.Error(), http.StatusInternalServerError)
         return
     }
 
+    // Return success response
     w.Header().Set("Content-Type", "application/json")
     w.WriteHeader(http.StatusCreated)
     json.NewEncoder(w).Encode(map[string]interface{}{
         "message": "User created successfully",
-        "user": user,
+        "user":    result,
     })
 }
 

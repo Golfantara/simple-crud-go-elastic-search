@@ -1,10 +1,13 @@
 package user
 
-import "net/http"
+import (
+	"elasticsearch/feature/user/dtos"
+	"net/http"
+)
 
 type Repository interface {
 	Paginate(page, size int) []User
-	Insert(user User) int64
+	Insert(user *User) error
 	FindByID(userID int) *User
 	Update(user User) int64
 	DeleteByID(userID int) int64
@@ -19,7 +22,7 @@ type RepositoryElasticsearch interface {
 }
 
 type Usecase interface {
-	CreateUser(user User) error
+    CreateUser(newData dtos.InputUser) (*dtos.ResUser, error)
     GetUserByID(id string) (User, error)
     SearchUsers(query string) ([]User, error)
     DeleteUser(id string) error

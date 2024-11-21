@@ -32,15 +32,15 @@ func (mdl *model) Paginate(page, size int) []user.User {
 	return user
 }
 
-func (mdl *model) Insert(user user.User) int64 {
+func (mdl *model) Insert(user *user.User) error {
 	result := mdl.db.Create(&user)
 
 	if result.Error != nil {
 		log.Error(result.Error)
-		return -1
+		return nil
 	}
 
-	return int64(user.ID)
+	return nil
 }
 
 func (mdl *model) FindByID(userID int) *user.User {

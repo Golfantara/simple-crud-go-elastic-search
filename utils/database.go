@@ -2,8 +2,8 @@ package utils
 
 import (
 	"elasticsearch/config"
+	"elasticsearch/feature/user"
 	"fmt"
-	"os/user"
 
 	"gorm.io/driver/mysql"
 	"gorm.io/gorm"

@@ -4,7 +4,8 @@ import (
 	"elasticsearch/config"
 	"elasticsearch/feature/user"
 	uh "elasticsearch/feature/user/handler"
-	ur "elasticsearch/feature/user/repository/elasticsearch"
+	ur "elasticsearch/feature/user/repository"
+	ure "elasticsearch/feature/user/repository/elasticsearch"
 	uu "elasticsearch/feature/user/usecase"
 	"elasticsearch/routes"
 	"elasticsearch/utils"
@@ -31,7 +32,10 @@ func UserHandler() user.Handler {
 		log.Fatalf("Error creating ElasticSearch client: %v", err)
 	}
 
-	repo := ur.NewUserRepository(client)
-	uc := uu.New(repo)
+	db := utils.InitDB()
+
+	repoElastic := ure.NewUserRepository(client)
+	repo := ur.New(db)
+	uc := uu.New(repoElastic, repo)
 	return uh.New(uc)
 }
